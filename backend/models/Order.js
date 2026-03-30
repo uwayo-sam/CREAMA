@@ -2,14 +2,24 @@ const pool = require('../config/database');
 
 class Order {
   static async create(orderData) {
-    const { user_id, total, items } = orderData;
+    const { user_id, total, items, delivery_address, latitude, longitude } = orderData;
     const connection = await pool.getConnection();
     try {
       await connection.beginTransaction();
-      const [orderResult] = await connection.execute(
-        'INSERT INTO orders (user_id, total) VALUES (?, ?)',
-        [user_id, total]
-      );
+      // Try to insert with location data, fall back without if columns don't exist
+      let orderResult;
+      try {
+        [orderResult] = await connection.execute(
+          'INSERT INTO orders (user_id, total, delivery_address, latitude, longitude) VALUES (?, ?, ?, ?, ?)',
+          [user_id, total, delivery_address || null, latitude || null, longitude || null]
+        );
+      } catch (error) {
+        // Fall back to old schema without location columns
+        [orderResult] = await connection.execute(
+          'INSERT INTO orders (user_id, total) VALUES (?, ?)',
+          [user_id, total]
+        );
+      }
       const orderId = orderResult.insertId;
       for (const item of items) {
         await connection.execute(
