@@ -15,6 +15,9 @@ import { Menu } from './pages/Menu';
 import { Location } from './pages/Location';
 import { About } from './pages/About';
 import { Services } from './pages/Services';
+import { LoginPage } from './pages/Login';
+import { Checkout } from './pages/Checkout';
+import { OrderSuccess } from './pages/OrderSuccess';
 
 export default function App() {
   return (
@@ -22,20 +25,30 @@ export default function App() {
       <CartProvider>
         <Router>
           <ScrollToTop />
-          <div className="flex flex-col min-h-screen bg-creama-bg text-creama-dark font-sans">
-            <Navbar />
-            <main className="flex-grow">
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/menu" element={<Menu />} />
-                <Route path="/location" element={<Location />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/services" element={<Services />} />
-              </Routes>
-            </main>
-            <Footer />
-            <CartDrawer />
-          </div>
+          <Routes>
+            {/* Login page without layout */}
+            <Route path="/login" element={<LoginPage />} />
+            
+            {/* Main app with layout */}
+            <Route path="/*" element={
+              <div className="flex flex-col min-h-screen bg-creama-bg text-creama-dark font-sans">
+                <Navbar />
+                <main className="flex-grow">
+                  <Routes>
+                    <Route path="/" element={<Home />} />
+                    <Route path="/menu" element={<Menu />} />
+                    <Route path="/location" element={<Location />} />
+                    <Route path="/about" element={<About />} />
+                    <Route path="/services" element={<Services />} />
+                    <Route path="/checkout" element={<Checkout />} />
+                    <Route path="/order-success" element={<OrderSuccess />} />
+                  </Routes>
+                </main>
+                <Footer />
+                <CartDrawer />
+              </div>
+            } />
+          </Routes>
         </Router>
       </CartProvider>
     </AuthProvider>

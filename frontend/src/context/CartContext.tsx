@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import api from '../api/api';
 
 export interface Product {
@@ -22,7 +22,7 @@ interface CartContextType {
   removeItem: (productId: number) => void;
   updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
-  checkout: () => Promise<void>;
+  checkout: (locationData?: { address: string; latitude: number; longitude: number }) => Promise<void>;
   totalItems: number;
   totalPrice: number;
   isCartOpen: boolean;
@@ -31,9 +31,37 @@ interface CartContextType {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// localStorage key for cart persistence
+const CART_STORAGE_KEY = 'creama_cart';
+
+// Helper function to load cart from localStorage
+const loadCartFromStorage = (): CartItem[] => {
+  try {
+    const stored = localStorage.getItem(CART_STORAGE_KEY);
+    return stored ? JSON.parse(stored) : [];
+  } catch (error) {
+    console.error('Error loading cart from localStorage:', error);
+    return [];
+  }
+};
+
+// Helper function to save cart to localStorage
+const saveCartToStorage = (items: CartItem[]) => {
+  try {
+    localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+  } catch (error) {
+    console.error('Error saving cart to localStorage:', error);
+  }
+};
+
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([]);
+  const [items, setItems] = useState<CartItem[]>(loadCartFromStorage);
   const [isCartOpen, setIsCartOpen] = useState(false);
+
+  // Save cart to localStorage whenever items change
+  useEffect(() => {
+    saveCartToStorage(items);
+  }, [items]);
 
   const addItem = (product: Product) => {
     setItems((prev) => {
@@ -64,15 +92,33 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => setItems([]);
 
-  const checkout = async () => {
-    const orderItems = items.map(item => ({
-      menu_item_id: item.id,
-      quantity: item.quantity,
-      price: item.price
-    }));
-    const totalWithTax = totalPrice * 1.18;
-    await api.post('/orders', { items: orderItems, total: totalWithTax });
-    clearCart();
+  const checkout = async (locationData?: { address: string; latitude: number; longitude: number }) => {
+    try {
+      const orderItems = items.map(item => ({
+        menu_item_id: item.id,
+        quantity: item.quantity,
+        price: item.price
+      }));
+      const totalWithTax = totalPrice * 1.18;
+      const orderData = {
+        items: orderItems,
+        total: totalWithTax,
+        ...(locationData && {
+          delivery_address: locationData.address,
+          latitude: locationData.latitude,
+          longitude: locationData.longitude,
+        })
+      };
+
+      console.log('Sending order data:', orderData);
+      const response = await api.post('/orders', orderData);
+      console.log('Order response:', response);
+      clearCart();
+    } catch (error: any) {
+      console.error('Checkout error:', error);
+      console.error('Error response:', error.response?.data);
+      throw error;
+    }
   };
 
   const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);

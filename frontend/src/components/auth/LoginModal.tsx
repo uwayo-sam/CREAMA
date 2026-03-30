@@ -72,33 +72,35 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
+            transition={{ duration: 0.2 }}
             onClick={onClose}
-            className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm"
+            className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm"
           />
 
           {/* Modal */}
           <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4"
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ duration: 0.3, ease: "easeOut" }}
+            className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 p-4"
           >
-            <div className="w-full max-w-md bg-creama-bg rounded-2xl shadow-2xl border border-creama-latte/30 overflow-hidden">
+            <div className="w-full max-w-md bg-white rounded-2xl shadow-2xl border border-gray-200 overflow-hidden">
               {/* Header */}
-              <div className="flex items-center justify-between p-6 border-b border-creama-latte/30">
-                <h2 className="font-serif text-2xl font-bold text-creama-dark">
+              <div className="flex items-center justify-between p-6 border-b border-gray-200 bg-gray-50">
+                <h2 className="font-serif text-2xl font-bold text-gray-900">
                   {isLogin ? 'Welcome Back' : 'Create Account'}
                 </h2>
                 <button
                   onClick={onClose}
-                  className="p-2 text-creama-dark/60 hover:text-creama-dark transition-colors rounded-full hover:bg-creama-latte/20"
+                  className="p-2 text-gray-400 hover:text-gray-600 transition-colors rounded-full hover:bg-gray-100"
                 >
                   <X size={20} />
                 </button>
               </div>
 
               {/* Form */}
-              <form onSubmit={handleSubmit} className="p-6 space-y-6">
+              <form onSubmit={handleSubmit} className="p-6 space-y-6 bg-white">
                 {/* Name field (only for registration) */}
                 <AnimatePresence>
                   {!isLogin && (
@@ -108,18 +110,18 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                       exit={{ opacity: 0, height: 0 }}
                       className="space-y-2"
                     >
-                      <label className="block text-sm font-medium text-creama-dark">
+                      <label className="block text-sm font-medium text-gray-700">
                         Full Name
                       </label>
                       <div className="relative">
-                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-creama-dark/40" size={18} />
+                        <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                         <input
                           type="text"
                           name="name"
                           value={formData.name}
                           onChange={handleInputChange}
                           required={!isLogin}
-                          className="w-full pl-10 pr-4 py-3 border border-creama-latte rounded-lg focus:outline-none focus:ring-2 focus:ring-creama-accent focus:border-transparent bg-creama-bg"
+                          className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                           placeholder="Enter your full name"
                         />
                       </div>
@@ -129,18 +131,18 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
                 {/* Email field */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-creama-dark">
+                  <label className="block text-sm font-medium text-gray-700">
                     Email Address
                   </label>
                   <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-creama-dark/40" size={18} />
+                    <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                     <input
                       type="email"
                       name="email"
                       value={formData.email}
                       onChange={handleInputChange}
                       required
-                      className="w-full pl-10 pr-4 py-3 border border-creama-latte rounded-lg focus:outline-none focus:ring-2 focus:ring-creama-accent focus:border-transparent bg-creama-bg"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                       placeholder="Enter your email"
                     />
                   </div>
@@ -148,24 +150,24 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
 
                 {/* Password field */}
                 <div className="space-y-2">
-                  <label className="block text-sm font-medium text-creama-dark">
+                  <label className="block text-sm font-medium text-gray-700">
                     Password
                   </label>
                   <div className="relative">
-                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-creama-dark/40" size={18} />
+                    <Lock className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
                     <input
                       type={showPassword ? 'text' : 'password'}
                       name="password"
                       value={formData.password}
                       onChange={handleInputChange}
                       required
-                      className="w-full pl-10 pr-12 py-3 border border-creama-latte rounded-lg focus:outline-none focus:ring-2 focus:ring-creama-accent focus:border-transparent bg-creama-bg"
+                      className="w-full pl-10 pr-12 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white text-gray-900 placeholder-gray-500"
                       placeholder="Enter your password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-creama-dark/40 hover:text-creama-dark"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                       {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                     </button>
@@ -191,24 +193,23 @@ export function LoginModal({ isOpen, onClose }: LoginModalProps) {
                 </AnimatePresence>
 
                 {/* Submit button */}
-                <Button
+                <button
                   type="submit"
                   disabled={isLoading}
-                  className="w-full"
-                  size="lg"
+                  className="w-full bg-amber-600 hover:bg-amber-700 disabled:bg-amber-400 text-white font-semibold py-3 px-4 rounded-lg transition-colors disabled:cursor-not-allowed"
                 >
                   {isLoading
                     ? (isLogin ? 'Signing In...' : 'Creating Account...')
                     : (isLogin ? 'Sign In' : 'Create Account')
                   }
-                </Button>
+                </button>
 
                 {/* Switch mode */}
                 <div className="text-center">
                   <button
                     type="button"
                     onClick={switchMode}
-                    className="text-sm text-creama-dark/70 hover:text-creama-accent transition-colors"
+                    className="text-sm text-gray-600 hover:text-amber-600 transition-colors"
                   >
                     {isLogin
                       ? "Don't have an account? Sign up"

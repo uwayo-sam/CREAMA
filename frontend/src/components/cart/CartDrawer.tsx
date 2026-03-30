@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
@@ -6,25 +7,17 @@ import { useAuth } from '../../context/AuthContext';
 import { Button } from '../ui/Button';
 
 export function CartDrawer() {
-  const { items, isCartOpen, setIsCartOpen, updateQuantity, removeItem, checkout, totalPrice } = useCart();
+  const { items, isCartOpen, setIsCartOpen, updateQuantity, removeItem, totalPrice } = useCart();
   const { user } = useAuth();
-  const [isCheckingOut, setIsCheckingOut] = useState(false);
+  const navigate = useNavigate();
 
-  const handleCheckout = async () => {
+  const handleCheckout = () => {
     if (!user) {
       alert('Please log in to place an order');
       return;
     }
-    setIsCheckingOut(true);
-    try {
-      await checkout();
-      alert('Order placed successfully!');
-      setIsCartOpen(false);
-    } catch (error) {
-      alert('Error placing order. Please try again.');
-    } finally {
-      setIsCheckingOut(false);
-    }
+    setIsCartOpen(false);
+    navigate('/checkout');
   };
 
   return (
@@ -131,8 +124,8 @@ export function CartDrawer() {
                     <span>{(totalPrice * 1.18).toLocaleString()} FRW</span>
                   </div>
                 </div>
-                <Button className="w-full" size="lg" onClick={handleCheckout} disabled={isCheckingOut}>
-                  {isCheckingOut ? 'Placing Order...' : 'Proceed to Checkout'}
+                <Button className="w-full" size="lg" onClick={handleCheckout}>
+                  Proceed to Checkout
                 </Button>
               </div>
             )}

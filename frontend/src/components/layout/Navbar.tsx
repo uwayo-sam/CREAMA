@@ -5,14 +5,12 @@ import { useCart } from '../../context/CartContext';
 import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
-import { LoginModal } from '../auth/LoginModal';
 
 export function Navbar() {
   const { totalItems, setIsCartOpen } = useCart();
   const { user, logout } = useAuth();
   const location = useLocation();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -74,13 +72,13 @@ export function Navbar() {
                 </button>
               </div>
             ) : (
-              <button
-                onClick={() => setIsLoginModalOpen(true)}
+              <Link
+                to="/login"
                 className="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-medium text-creama-dark hover:text-creama-accent transition-colors border border-creama-latte rounded-lg"
               >
                 <User size={16} />
                 Login
-              </button>
+              </Link>
             )}
 
             <button
@@ -150,28 +148,20 @@ export function Navbar() {
                     </button>
                   </div>
                 ) : (
-                  <button
-                    onClick={() => {
-                      setIsLoginModalOpen(true);
-                      setIsMobileMenuOpen(false);
-                    }}
+                  <Link
+                    to="/login"
+                    onClick={() => setIsMobileMenuOpen(false)}
                     className="flex items-center gap-2 w-full px-4 py-2 text-left text-creama-dark hover:text-creama-accent transition-colors"
                   >
                     <User size={16} />
                     Login
-                  </button>
+                  </Link>
                 )}
               </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Login Modal */}
-      <LoginModal
-        isOpen={isLoginModalOpen}
-        onClose={() => setIsLoginModalOpen(false)}
-      />
     </header>
   );
 }
