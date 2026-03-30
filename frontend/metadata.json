@@ -1,0 +1,5 @@
+{
+  "name": "Creama Coffee Shop",
+  "description": "A modern, multi-page website for Creama Coffee Shop with online ordering and location map.",
+  "requestFramePermissions": ["geolocation"]
+}
