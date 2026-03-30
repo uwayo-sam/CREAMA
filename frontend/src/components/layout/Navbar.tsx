@@ -1,14 +1,18 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { ShoppingBag, Menu, X, Coffee } from 'lucide-react';
+import { ShoppingBag, Menu, X, Coffee, User, LogOut } from 'lucide-react';
 import { useCart } from '../../context/CartContext';
+import { useAuth } from '../../context/AuthContext';
 import { cn } from '../../lib/utils';
 import { motion, AnimatePresence } from 'motion/react';
+import { LoginModal } from '../auth/LoginModal';
 
 export function Navbar() {
   const { totalItems, setIsCartOpen } = useCart();
+  const { user, logout } = useAuth();
   const location = useLocation();
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isLoginModalOpen, setIsLoginModalOpen] = useState(false);
 
   const navLinks = [
     { name: 'Home', path: '/' },
@@ -54,6 +58,31 @@ export function Navbar() {
 
           {/* Actions */}
           <div className="flex items-center gap-4">
+            {/* Auth Buttons */}
+            {user ? (
+              <div className="hidden md:flex items-center gap-4">
+                <div className="flex items-center gap-2 text-sm text-creama-dark">
+                  <User size={16} />
+                  <span>Welcome, {user.name}</span>
+                </div>
+                <button
+                  onClick={logout}
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-creama-dark hover:text-creama-accent transition-colors"
+                >
+                  <LogOut size={16} />
+                  Logout
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsLoginModalOpen(true)}
+                className="hidden md:flex items-center gap-2 px-4 py-2 text-sm font-medium text-creama-dark hover:text-creama-accent transition-colors border border-creama-latte rounded-lg"
+              >
+                <User size={16} />
+                Login
+              </button>
+            )}
+
             <button
               onClick={() => setIsCartOpen(true)}
               className="relative p-2 text-creama-dark hover:text-creama-accent transition-colors"
@@ -100,10 +129,49 @@ export function Navbar() {
                   {link.name}
                 </Link>
               ))}
+
+              {/* Mobile Auth */}
+              <div className="border-t border-creama-latte/30 pt-4 mt-4">
+                {user ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 text-creama-dark">
+                      <User size={16} />
+                      <span className="text-sm">Welcome, {user.name}</span>
+                    </div>
+                    <button
+                      onClick={() => {
+                        logout();
+                        setIsMobileMenuOpen(false);
+                      }}
+                      className="flex items-center gap-2 w-full px-4 py-2 text-left text-creama-dark hover:text-creama-accent transition-colors"
+                    >
+                      <LogOut size={16} />
+                      Logout
+                    </button>
+                  </div>
+                ) : (
+                  <button
+                    onClick={() => {
+                      setIsLoginModalOpen(true);
+                      setIsMobileMenuOpen(false);
+                    }}
+                    className="flex items-center gap-2 w-full px-4 py-2 text-left text-creama-dark hover:text-creama-accent transition-colors"
+                  >
+                    <User size={16} />
+                    Login
+                  </button>
+                )}
+              </div>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
+
+      {/* Login Modal */}
+      <LoginModal
+        isOpen={isLoginModalOpen}
+        onClose={() => setIsLoginModalOpen(false)}
+      />
     </header>
   );
 }
